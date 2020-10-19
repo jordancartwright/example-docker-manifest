@@ -1,0 +1,8 @@
+FROM adoptopenjdk:8-jdk-hotspot-bionic as final
+
+LABEL maintainer="Jordan Cartwright @ IBM <jordan.cartwright@ibm.com>"
+
+COPY ./script.sh /script.sh
+RUN ["chmod", "+x", "/script.sh"]
+
+ENTRYPOINT ["/script.sh"]
