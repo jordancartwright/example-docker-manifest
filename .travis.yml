@@ -18,14 +18,17 @@ jobs:
   - stage: Build
     if: branch = master AND type != pull_request
     os: linux
+    arch: amd64
     script:
       - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
       - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
-  - os: linux-s390x
+  - os: linux
+    arch: s390x
     script:
       - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
       - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
-  - os: linux-ppc64le
+  - os: linux
+    arch: ppc64le
     script:
       - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
       - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
