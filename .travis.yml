@@ -1,0 +1,52 @@
+language: bash
+sudo: required
+services:
+- docker
+dist: bionic
+
+env:
+  global:
+    - GIT_BRANCH=$TRAVIS_BRANCH
+    - IS_PULL_REQUEST=$TRAVIS_PULL_REQUEST
+    - DOCKER_NAMESPACE=jacart
+    - DOCKER_IMAGE=example-docker-manifest
+    - SUPPORTED_ARCHITECTURES="amd64 s390x ppc64le"
+    - VERSION=$(cat VERSION)
+
+jobs:
+  include:
+  - stage: Build
+    if: branch = master AND type != pull_request
+    os: linux
+    script:
+      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
+  - os: linux-s390x
+    script:
+      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
+  - os: linux-ppc64le
+    script:
+      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
+
+  - stage: Tag
+    if: branch = master AND type != pull_request
+    os: linux
+    script:
+      - './.ci/tag-image.sh --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-openj9-bionic --tags "${VERSION}-8-openj9-bionic ${VERSION}-openj9 ${VERSION} latest"'
+      - './.ci/tag-image.sh --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-hotspot-bionic --tags "${VERSION}-8-hotspot-bionic ${VERSION}-8-hotspot ${VERSION}-hotspot"'
+
+  - stage: Manifest
+    if: branch = master AND type != pull_request
+    os: linux
+    script:
+      - sudo bash ./.ci/enable-experimental.sh
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-jdk-openj9-bionic --latest
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-openj9-bionic
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-openj9
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION}
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-jdk-hotspot-bionic
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-hotspot-bionic
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-hotspot
+      - ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant hotspot
