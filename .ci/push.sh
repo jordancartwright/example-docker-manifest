@@ -22,6 +22,7 @@ source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-function
 
 DOCKER_IMAGE=""         # The name of the image that will be pushed to the DOCKER_REGISTRY
 DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
+IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -32,6 +33,9 @@ while [[ $# -gt 0 ]]; do
     ;;
     -o|--official)
     DOCKER_OFFICIAL=true
+    ;;
+    --dry-run)
+    IS_DRY_RUN=true
     ;;
     *)
     echo "Unknown option: $key"
@@ -66,7 +70,9 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
   fi
 
   # This uses DOCKER_USER and DOCKER_PASS to login to DOCKER_REGISTRY
-  docker-login
+  if [[ ! ${IS_DRY_RUN} = true ]]; then
+    docker-login
+  fi
 
   # ------------------------
   #  ____  _  _  ____  _  _ 
@@ -93,6 +99,8 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
 
   # push the built image to the registry
   echo "INFO: Pushing ${DOCKER_URI}"
-  docker push ${DOCKER_URI}
+  if [[ ! ${IS_DRY_RUN} = true ]]; then
+    docker push ${DOCKER_URI}
+  fi
 
 fi
