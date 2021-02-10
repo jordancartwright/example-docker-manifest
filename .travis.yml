@@ -47,11 +47,11 @@ jobs:
     os: linux
     script:
       - sudo bash ./.ci/enable-experimental.sh
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-jdk-openj9-bionic --latest
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-openj9-bionic
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-openj9
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION}
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-jdk-hotspot-bionic
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-hotspot-bionic
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant 8-hotspot
-      - sudo bash ./.ci/manifest-create-and-push.sh --image ${DOCKER_IMAGE} --image-version ${VERSION} --variant hotspot
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-jdk-openj9-bionic --latest --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-openj9-bionic --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-openj9 --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION} --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-jdk-hotspot-bionic --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-hotspot-bionic --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-hotspot --push
+      - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-hotspot --push
