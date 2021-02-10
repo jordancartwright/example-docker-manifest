@@ -23,6 +23,7 @@ source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-function
 IMAGE=""                # The docker image (including root tag) to use when making a new tag (image:tag)
 TAGS=""                 # A list of new tags that the image will become i.e. "tag1 tag2 ... tagN"
 DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
+IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -37,6 +38,9 @@ while [[ $# -gt 0 ]]; do
     ;;
     -o|--official)
     DOCKER_OFFICIAL=true
+    ;;
+    --dry-run)
+    IS_DRY_RUN=true
     ;;
     *)
     echo "Unknown option: $key"
@@ -55,13 +59,19 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
   # (____/(____) (__) \____/(__)  
   # ------------------------------
 
+  if [[ ${IS_DRY_RUN} = true ]]; then
+    echo "INFO: Dry run executing, nothing will be pushed/run"
+  fi
+
   # split the IMAGE into DOCKER_IMAGE_NAME DOCKER_TAG based on the delimiter, ':'
   IFS=":" read -r -a image_info <<< "$IMAGE"
   DOCKER_IMAGE_NAME=${image_info[0]}
   DOCKER_TAG=${image_info[1]}
 
   # This uses DOCKER_USER and DOCKER_PASS to login to DOCKER_REGISTRY
-  docker-login
+  if [[ ! ${IS_DRY_RUN} = true ]]; then
+    docker-login
+  fi
 
   # Pull the latest image that was uploaded
   for ARCH in ${SUPPORTED_ARCHITECTURES}; do
@@ -78,7 +88,9 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
     DOCKER_REPO=$(echo ${DOCKER_REPO} | sed 's/^\/*//')  # strip off all leading '/' characters
     
     echo "INFO: Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
-    docker pull ${DOCKER_REPO}:${DOCKER_PULL_TAG}
+    if [[ ! ${IS_DRY_RUN} = true ]]; then
+      docker pull ${DOCKER_REPO}:${DOCKER_PULL_TAG}
+    fi
   done
 
   # --------------------------------------------------------------------------
@@ -112,8 +124,10 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
       tagged_docker_image=$(echo ${tagged_docker_image} | sed 's/^\/*//')
 
       echo "INFO: Tagging ${original_docker_image} as ${tagged_docker_image}"
-      docker tag ${original_docker_image} ${tagged_docker_image}
-      docker push ${tagged_docker_image}
+      if [[ ! ${IS_DRY_RUN} = true ]]; then
+        docker tag ${original_docker_image} ${tagged_docker_image}
+        docker push ${tagged_docker_image}
+      fi
     done
   done
 

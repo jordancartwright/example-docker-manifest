@@ -27,6 +27,7 @@ DOCKER_BUILD_OPTS=""    # Options passed to "docker build" command separated by 
 DOCKER_BUILD_PATH="."   # The docker build context to use when building the image
 DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
 DOCKER_PUSH=false       # flag to push a docker image after being built
+IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -60,7 +61,9 @@ while [[ $# -gt 0 ]]; do
     ;;
     --push)
     DOCKER_PUSH=true
-    shift
+    ;;
+    --dry-run)
+    IS_DRY_RUN=true
     ;;
     *)
     echo "Unknown option: $key"
@@ -78,6 +81,10 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
   # \___ \ ) _)   )(  ) \/ ( ) __/
   # (____/(____) (__) \____/(__)  
   # ------------------------------
+
+  if [[ ${IS_DRY_RUN} = true ]]; then
+    echo "INFO: Dry run executing, nothing will be pushed/run"
+  fi
 
   # Get the Docker Architecture if not provided
   if [[ -z ${DOCKER_ARCH} ]]; then
@@ -100,7 +107,9 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
   fi
 
   # This uses DOCKER_USER and DOCKER_PASS to login to DOCKER_REGISTRY
-  docker-login
+  if [[ ! ${IS_DRY_RUN} = true ]]; then
+    docker-login
+  fi
 
   # # check if the image has already been published to the registry before pushing
   # is-published ${DOCKER_BUILD_TAG}
@@ -129,13 +138,17 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
   DOCKER_URI=$(echo ${DOCKER_URI} | sed 's/^\/*//')  # strip off all leading '/' characters
 
   echo "INFO: Building ${DOCKER_URI} using ${DOCKER_BUILD_PATH}/${DOCKERFILE}"
-  cd ${DOCKER_BUILD_PATH} && \
-  docker build --pull ${DOCKER_BUILD_ARGS} ${DOCKER_BUILD_OPTS} -t ${DOCKER_URI} -f ${DOCKERFILE} .
+  if [[ ! ${IS_DRY_RUN} = true ]]; then
+    cd ${DOCKER_BUILD_PATH} && \
+    docker build --pull ${DOCKER_BUILD_ARGS} ${DOCKER_BUILD_OPTS} -t ${DOCKER_URI} -f ${DOCKERFILE} .
+  fi
 
   if [[ ${DOCKER_PUSH} = true ]]; then
     # push the built image to the registry
     echo "INFO: Pushing ${DOCKER_URI}"
-    docker push ${DOCKER_URI}
+    if [[ ! ${IS_DRY_RUN} = true ]]; then
+      docker push ${DOCKER_URI}
+    fi
   fi
 
 fi

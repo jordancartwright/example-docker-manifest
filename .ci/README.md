@@ -24,7 +24,7 @@ The `build` script is used to build an image to a docker repo on DockerHub or a 
 
 An official image is an image on DockerHub that has been published to the library namespace (`library/ubuntu:latest`). The official images have their multi-architecture tags published to the namespace matching the arch that is supported by the image (`amd64/ubuntu:latest`).
 
-Using the `--official` and `--push` flags will publish your images to the specified `DOCKER_NAMESPACE` (you do not need to use `library`). The multi-architecture tags will be published to the namespaces included in the `SUPPORTED_ARCHITECTURES` variable (i.e `"amd64 s390x ..."`).
+Using the `--official` and `--push` flags will publish your images to the namespaces included in the `SUPPORTED_ARCHITECTURES` variable (i.e `"amd64 s390x ..."`). This will prepare the image for a manifest under the `library` namespace like an official image.
 
 To test an image prior to publishing, simply omit the `--push` flag from your `build.sh` command. This will build the image on the local system enabling the execution of container verification testing. If your testing has met the publishing requirements use the [push.sh](#pushsh) script to complete publication of the new image.
 
@@ -84,26 +84,28 @@ This script will enable experimental mode on the docker host. As of right now do
 ./.ci/enable-experimental.sh
 ```
 
-### `manifest-create-and-push.sh`
-The `manifest-create-and-push` script is used to create docker manifests to enable multi-architecture images.
+### `manifest.sh`
+The `manifest` script is used to create docker manifests to enable multi-architecture images.
 
-This script additionally supports publishing manifests for images that have been published to your private registry as official. For what an official image means, [reference the `build.sh` section](#buildsh).
+This script additionally supports publishing manifests for images that have been published to your private registry as official using the `--official` flag. For what an official image means, [reference the `build.sh` section](#buildsh).
 
-The following usage examples showcase the `manifest-create-and-push` command, publishing manifests for official and non official images.
+Using the `--push` flag will run a `push --prune` of the docker manifest to the docker registry. Without this flag the manifest will reside on the local machine and will not be pushed to the registry.
+
+The following usage examples showcase the `manifest` command, publishing manifests for official and non official images.
 
 ###### official image
 ```
-./.ci/manifest-create-and-push.sh --image ycsb --image-version 0.17.0 --variant 8-jdk-openj9-bionic --official
+./.ci/manifest.sh --image ycsb --manifest 0.17.0-8-jdk-openj9-bionic --push --official
 ```
-This will create a docker manifest which will enable pulling from `${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/ycsb:0.17.0-8-jdk-openj9-bionic` and include all images under the `SUPPORTED_ARCHITECTURES` env variable. For example if `SUPPORTED_ARCHITECTURES="amd64 s390x ppc64le"` the manifest that is generated will be like so.
-- `${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/ycsb:0.17.0-8-jdk-openj9-bionic`
+This will create a docker manifest which will enable pulling from `${DOCKER_REGISTRY}/library/ycsb:0.17.0-8-jdk-openj9-bionic` and include all images under the `SUPPORTED_ARCHITECTURES` env variable. For example if `SUPPORTED_ARCHITECTURES="amd64 s390x ppc64le"` the manifest that is generated will be like so.
+- `${DOCKER_REGISTRY}/library/ycsb:0.17.0-8-jdk-openj9-bionic`
   - `${DOCKER_REGISTRY}/amd64/ycsb:0.17.0-8-jdk-openj9-bionic`
   - `${DOCKER_REGISTRY}/s390x/ycsb:0.17.0-8-jdk-openj9-bionic`
   - `${DOCKER_REGISTRY}/ppc64le/ycsb:0.17.0-8-jdk-openj9-bionic`
 
 ###### unofficial image/custom private registry
 ```
-./.ci/manifest-create-and-push.sh --image ycsb --image-version 0.17.0 --variant 8-jdk-openj9-bionic
+./.ci/manifest.sh --image ycsb --manifest 0.17.0-8-jdk-openj9-bionic --push
 ```
 This will create a docker manifest which will enable pulling from `${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/ycsb:0.17.0-8-jdk-openj9-bionic` and include all images under the `SUPPORTED_ARCHITECTURES` env variable. For example  if `SUPPORTED_ARCHITECTURES="amd64 s390x ppc64le"` the manifest that is generated will be like so.
 - `${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/ycsb:0.17.0-8-jdk-openj9-bionic`
