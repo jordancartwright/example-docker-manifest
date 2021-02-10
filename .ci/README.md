@@ -24,7 +24,7 @@ The `build` script is used to build an image to a docker repo on DockerHub or a 
 
 An official image is an image on DockerHub that has been published to the library namespace (`library/ubuntu:latest`). The official images have their multi-architecture tags published to the namespace matching the arch that is supported by the image (`amd64/ubuntu:latest`).
 
-Using the `--official` and `--push` flags will publish your images to the `library` namespace on your private registry. The multi-architecture tags will be published to the namespaces included in the `SUPPORTED_ARCHITECTURES` variable (i.e `"amd64 s390x ..."`).
+Using the `--official` and `--push` flags will publish your images to the namespaces included in the `SUPPORTED_ARCHITECTURES` variable (i.e `"amd64 s390x ..."`). This will prepare the image for a manifest under the `library` namespace like an official image.
 
 To test an image prior to publishing, simply omit the `--push` flag from your `build.sh` command. This will build the image on the local system enabling the execution of container verification testing. If your testing has met the publishing requirements use the [push.sh](#pushsh) script to complete publication of the new image.
 
