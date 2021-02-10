@@ -16,7 +16,6 @@ env:
 jobs:
   include:
   - stage: Build
-    if: branch = master AND type != pull_request
     os: linux
     arch: amd64
     script:
