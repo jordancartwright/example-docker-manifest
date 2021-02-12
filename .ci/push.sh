@@ -24,6 +24,18 @@ DOCKER_IMAGE=""         # The name of the image that will be pushed to the DOCKE
 DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
 IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
+usage() {
+  echo -e "A docker container push script for ci pipelines when tesing an image prior to uploading \n\n"
+  echo "Usage:"
+  echo "${0} --image example-docker-manifest:1.0.0-8-jdk-openj9-bionic [--official] [--dry-run]"
+  echo ""
+}
+
+if [[ "$*" == "" ]] || [[ "$*" != *--image* ]]; then
+  usage
+  exit 1
+fi
+
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
