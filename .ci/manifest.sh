@@ -26,6 +26,18 @@ DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in
 DOCKER_PUSH=false       # flag to push a docker manifest to a registry after being created
 IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
+usage() {
+  echo -e "A docker container manifest create script for ci pipelines \n\n"
+  echo "Usage:"
+  echo "${0} --image example-docker-manifest --manifest 1.0.0-8-jdk-openj9-bionic [--latest] [--push] [--official] [--dry-run]"
+  echo ""
+}
+
+if [[ "$*" == "" ]] || [[ "$*" != *--image* ]] || [[ "$*" != *--manifest* ]]; then
+  usage
+  exit 1
+fi
+
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in

@@ -25,6 +25,18 @@ TAGS=""                 # A list of new tags that the image will become i.e. "ta
 DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
 IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
+usage() {
+  echo -e "A docker container tagging script for ci pipelines \n\n"
+  echo "Usage:"
+  echo "${0} --image image:tag --tags \"tag1 tag2 ... tagN\" [--official] [--dry-run]"
+  echo ""
+}
+
+if [[ "$*" == "" ]] || [[ "$*" != *--image* ]] || [[ "$*" != *--tags* ]]; then
+  usage
+  exit 1
+fi
+
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
