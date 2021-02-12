@@ -29,6 +29,18 @@ DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in
 DOCKER_PUSH=false       # flag to push a docker image after being built
 IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
 
+usage() {
+  echo -e "A docker container build script for ci pipelines \n\n"
+  echo "Usage:"
+  echo "${0} [-f path/to/Dockerfile] --image example-docker-manifest --tag 1.0.0-8-jdk-openj9-bionic [--context build-context] [--push] [--official] [--dry-run]"
+  echo ""
+}
+
+if [[ "$*" == "" ]] || [[ "$*" != *--image* ]] || [[ "$*" != *--tag* ]]; then
+  usage
+  exit 1
+fi
+
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
