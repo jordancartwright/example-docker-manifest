@@ -97,7 +97,7 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
       DOCKER_PULL_TAG=${ARCH}-${DOCKER_TAG}  # pull registry/namespace/image:arch-tag
     fi
 
-    DOCKER_REPO=$(echo ${DOCKER_REPO} | sed 's/^\/*//')  # strip off all leading '/' characters
+    DOCKER_REPO=$(strip-uri ${DOCKER_REPO})
     
     echo "INFO: Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
     if [[ ! ${IS_DRY_RUN} = true ]]; then
@@ -132,8 +132,8 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
       fi
 
       # strip off all leading '/' characters to account for Registry and Namespaces
-      original_docker_image=$(echo ${original_docker_image} | sed 's/^\/*//')
-      tagged_docker_image=$(echo ${tagged_docker_image} | sed 's/^\/*//')
+      original_docker_image=$(strip-uri ${original_docker_image})
+      tagged_docker_image=$(strip-uri ${tagged_docker_image})
 
       echo "INFO: Tagging ${original_docker_image} as ${tagged_docker_image}"
       if [[ ! ${IS_DRY_RUN} = true ]]; then

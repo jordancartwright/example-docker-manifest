@@ -147,7 +147,7 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
     DOCKER_URI="${DOCKER_REPO}:${DOCKER_BUILD_TAG}"
   fi
 
-  DOCKER_URI=$(echo ${DOCKER_URI} | sed 's/^\/*//')  # strip off all leading '/' characters
+  DOCKER_URI=$(strip-uri ${DOCKER_URI})
 
   echo "INFO: Building ${DOCKER_URI} using ${DOCKER_BUILD_PATH}/${DOCKERFILE}"
   if [[ ! ${IS_DRY_RUN} = true ]]; then

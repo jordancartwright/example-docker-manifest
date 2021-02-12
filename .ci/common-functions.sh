@@ -11,12 +11,12 @@ build-manifest-cmd-for-tag() {
     else
         docker_uri="${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${DOCKER_IMAGE}"
     fi
-    docker_uri=$(echo ${docker_uri} | sed 's/^\/*//')  # strip off all leading '/' characters
+    docker_uri=$(strip-uri ${docker_uri})
 
     docker_manifest_command="docker manifest create ${docker_uri}:${docker_tag}"
     for ARCH in ${SUPPORTED_ARCHITECTURES}; do
         if [[ ${DOCKER_OFFICIAL} = true ]]; then
-            docker_official_uri=$(echo ${DOCKER_REGISTRY}/${ARCH}/${DOCKER_IMAGE} | sed 's/^\/*//')
+            docker_official_uri=$(strip-uri ${DOCKER_REGISTRY}/${ARCH}/${DOCKER_IMAGE})
             docker_manifest_command="${docker_manifest_command} ${docker_official_uri}:${docker_tag}"
         fi
 
@@ -35,12 +35,12 @@ annotate-manifest-for-tag() {
     else
         docker_uri="${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${DOCKER_IMAGE}"
     fi
-    docker_uri=$(echo ${docker_uri} | sed 's/^\/*//')  # strip off all leading '/' characters
+    docker_uri=$(strip-uri ${docker_uri})
 
     docker_manifest_command=""
     for ARCH in ${SUPPORTED_ARCHITECTURES}; do
         if [[ ${DOCKER_OFFICIAL} = true ]]; then
-            docker_official_uri=$(echo ${DOCKER_REGISTRY}/${ARCH}/${DOCKER_IMAGE} | sed 's/^\/*//')
+            docker_official_uri=$(strip-uri ${DOCKER_REGISTRY}/${ARCH}/${DOCKER_IMAGE})
             docker_manifest_command="${docker_manifest_command} && docker manifest annotate ${docker_uri}:${manifest_tag} ${docker_official_uri}:${manifest_tag} --arch ${ARCH}"
         fi
         
@@ -54,11 +54,18 @@ annotate-manifest-for-tag() {
 
 push-manifest-for-tag() {
     manifest_tag=$1
-    docker_uri=$(echo ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${DOCKER_IMAGE} | sed 's/^\/*//')  # strip off all leading '/' characters
+    docker_uri=$(strip-uri ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${DOCKER_IMAGE})
 
     if [[ ${DOCKER_OFFICIAL} = true ]]; then
-        docker_uri=$(echo ${DOCKER_REGISTRY}/library/${DOCKER_IMAGE} | sed 's/^\/*//')  # strip off all leading '/' characters
+        docker_uri=$(strip-uri ${DOCKER_REGISTRY}/library/${DOCKER_IMAGE})
     fi
     docker_manifest_command="docker manifest push --purge ${docker_uri}:${manifest_tag}"
     echo ${docker_manifest_command}
+}
+
+strip-uri() {
+    uri=$1
+    # strip off all leading '/' characters
+    uri=$(echo ${uri} | sed 's/^\/*//')
+    echo  ${uri}
 }

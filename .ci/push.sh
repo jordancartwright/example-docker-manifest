@@ -107,7 +107,7 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
     DOCKER_URI="${DOCKER_REPO}:${DOCKER_TAG}"
   fi
 
-  DOCKER_URI=$(echo ${DOCKER_URI} | sed 's/^\/*//')  # strip off all leading '/' characters
+  DOCKER_URI=$(strip-uri ${DOCKER_URI})
 
   # push the built image to the registry
   echo "INFO: Pushing ${DOCKER_URI}"

@@ -116,7 +116,7 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
             DOCKER_PULL_LATEST=${ARCH}-latest
         fi
 
-        DOCKER_REPO=$(echo ${DOCKER_REPO} | sed 's/^\/*//')  # strip off all leading '/' characters
+        DOCKER_REPO=$(strip-uri ${DOCKER_REPO})
 
         echo "INFO: Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
         if [[ ! ${IS_DRY_RUN} = true ]]; then
