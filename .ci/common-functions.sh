@@ -65,7 +65,7 @@ push-manifest-for-tag() {
 
 strip-uri() {
     uri=$1
-    # strip off all leading '/' characters
-    uri=$(echo ${uri} | sed 's/^\/*//')
+    # strip off all leading '/' characters, change `//` to `/`
+    uri=$(echo ${uri} | sed 's/^\/*//;s/\/\//\//g')
     echo  ${uri}
 }
