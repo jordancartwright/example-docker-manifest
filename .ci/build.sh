@@ -98,6 +98,9 @@ if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; t
     echo "INFO: Dry run executing, nothing will be pushed/run"
   fi
 
+  # Default the Dockerfile name if not provided
+  DOCKERFILE=${DOCKERFILE:-Dockerfile}
+
   # Get the Docker Architecture if not provided
   if [[ -z ${DOCKER_ARCH} ]]; then
     DOCKER_ARCH=$(docker version -f {{.Server.Arch}})
