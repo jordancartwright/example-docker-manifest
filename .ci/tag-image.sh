@@ -62,7 +62,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; then
+if [[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-master}" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; then
 
   # ------------------------------
   #  ____  ____  ____  _  _  ____ 
