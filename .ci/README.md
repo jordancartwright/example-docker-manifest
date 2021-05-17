@@ -1,20 +1,29 @@
 # Docker CI/CD Build scripts
 
-These build scripts were created to enable commit based docker container publishing using CI/CD pipelines like TravisCI or Jenkins.
+These build scripts were created to enable commit based docker container publishing using CI/CD pipelines like TravisCI or Jenkins. They were designed to be included into an existing project and allow some per-repo customization. This is the documentation on how to use the scripts.
+
+> The latest docs and build scripts can be found on GitHub at [jordan-cartwright-ibm/example-docker-manifest](https://github.com/jordan-cartwright-ibm/example-docker-manifest/tree/master/.ci)
 
 ## Setup
 ### ENV Vars
+Many CI/CD pipelines allow the maintainer to configure environment variables in some way. These scripts assume the existence of the following variables.
+
 - `GIT_BRANCH` - The name of the branch for current build
   - travis has `TRAVIS_BRANCH` containing the current value
   - Jenkins sets the `GIT_BRANCH` when using the git plugin
-- `IS_PULL_REQUEST` - images are only processed when set to `false` and `GIT_BRANCH=master`
+- `IS_PULL_REQUEST` - images are only processed when set to `false` and `GIT_BRANCH=RELEASE_BRANCH`
   - travis has `TRAVIS_PULL_REQUEST` with the current value as true or false
   - Jenkins has [GitHub Pull Request Builder Plugin](https://github.com/jenkinsci/ghprb-plugin) that can be configured to monitor pull requests and regular commits
+  - You could also set to `false` manually if desired to build pull requests
+- `RELEASE_BRANCH` - the branch that the ci scripts should run on (i.e. `master`/`main`/`docker`/etc. - default value: `master`)
 - `DOCKER_REGISTRY` - the docker registry to use (leave blank if using DockerHub)
 - `DOCKER_NAMESPACE` - the namespace in the docker registry to use (DockerHub username if using DockerHub, any if using private registry)
 - `SUPPORTED_ARCHITECTURES` - Space separated list of architectures that this docker image will build for i.e. `"amd64 s390x ppc64le"`
 - `DOCKER_USER` - the username credential for the ci pipeline to publish as
 - `DOCKER_PASS` - the password credential for the ci pipeline to publish as
+
+### Optional Env Variables
+- `FORCE_CI` - export `true` to make the ci scripts run regardless of the branch or pull request status. This can be used to by pass the `RELEASE_BRANCH` and `IS_PULL_REQUEST` settings
 
 
 ## Usage
@@ -61,6 +70,8 @@ This will push the image as `${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/ycsb:${ARCH}
 
 ### `tag-image.sh`
 The `tag-image` script is used to give a built variant image, that was pushed to either DockerHub or a private registry, new tags for referencing the image at a higher level.
+
+> **Note:** The new image tag will be automatically pushed to the docker registry during the execution of this script.
 
 This script additionally supports re-tagging images that have been published to your private registry as official images. For what an official image means, [reference the `build.sh` section](#buildsh)
 

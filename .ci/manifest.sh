@@ -69,9 +69,8 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-# Only build on master branch and NOT PR
-if [[ "${GIT_BRANCH}" == "master" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]; then
-    
+if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-master}" ]] && [[ "${IS_PULL_REQUEST}" == "false" ]]); then
+
     # ------------------------------
     #  ____  ____  ____  _  _  ____ 
     # / ___)(  __)(_  _)/ )( \(  _ \

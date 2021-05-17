@@ -8,6 +8,7 @@ env:
   global:
     - GIT_BRANCH=$TRAVIS_BRANCH
     - IS_PULL_REQUEST=$TRAVIS_PULL_REQUEST
+    - RELEASE_BRANCH=master
     - DOCKER_NAMESPACE=jacart
     - DOCKER_IMAGE=example-docker-manifest
     - SUPPORTED_ARCHITECTURES="amd64 s390x ppc64le"
