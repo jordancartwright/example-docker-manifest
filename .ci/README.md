@@ -22,6 +22,9 @@ Many CI/CD pipelines allow the maintainer to configure environment variables in 
 - `DOCKER_USER` - the username credential for the ci pipeline to publish as
 - `DOCKER_PASS` - the password credential for the ci pipeline to publish as
 
+### Optional Env Variables
+- `FORCE_CI` - export `true` to make the ci scripts run regardless of the branch or pull request status. This can be used to by pass the `RELEASE_BRANCH` and `IS_PULL_REQUEST` settings
+
 
 ## Usage
 
