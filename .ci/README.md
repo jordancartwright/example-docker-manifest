@@ -41,13 +41,13 @@ The following usage examples showcase the `build` command, pushing official and 
 
 ###### official image
 ```
-./.ci/build.sh --file 8/jdk/Dockerfile.openj9 --image ycsb --tag 0.17.0-8-jdk-openj9-bionic --build-args "YCSB_VERSION=${VERSION}" --push --official
+./.ci/build.sh --file 8/jdk/Dockerfile.openj9 --image ycsb:0.17.0-8-jdk-openj9-bionic --build-args "YCSB_VERSION=${VERSION}" --push --official
 ```
 This will build an image as `${DOCKER_REGISTRY}/${ARCH}/ycsb:0.17.0-8-jdk-openj9-bionic`. This image will be uploaded to the specified docker registry under the architecture namespace to mimic the official DockerHub images.
 
 ###### unofficial image/custom private registry
 ```
-./.ci/build.sh --file 8/jdk/Dockerfile.openj9 --image ycsb --tag 0.17.0-8-jdk-openj9-bionic --build-args "YCSB_VERSION=${VERSION}" --push
+./.ci/build.sh --file 8/jdk/Dockerfile.openj9 --image ycsb:0.17.0-8-jdk-openj9-bionic --build-args "YCSB_VERSION=${VERSION}" --push
 ```
 This will build an image as `${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/ycsb:${ARCH}-0.17.0-8-jdk-openj9-bionic`. This image will be uploaded to the specified docker registry and namespace with the architecture appended to the front of the build tag
 
