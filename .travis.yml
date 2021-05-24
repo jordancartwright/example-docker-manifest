@@ -21,23 +21,24 @@ jobs:
     os: linux
     arch: amd64
     script:
-      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
-      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-openj9-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-hotspot-bionic --push'
   - os: linux
     arch: s390x
     script:
-      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
-      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-openj9-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-hotspot-bionic --push'
   - if: branch = master AND type != pull_request
     os: linux
     arch: ppc64le
     script:
-      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-openj9-bionic --push'
-      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE} --tag ${VERSION}-8-jdk-hotspot-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.openj9 --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-openj9-bionic --push'
+      - './.ci/build.sh -f 8/jdk/Dockerfile.hotspot --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-hotspot-bionic --push'
 
   - stage: Tag
     if: branch = master AND type != pull_request
     os: linux
+    arch: s390x
     script:
       - './.ci/tag-image.sh --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-openj9-bionic --tags "${VERSION}-8-openj9-bionic ${VERSION}-openj9 ${VERSION} latest"'
       - './.ci/tag-image.sh --image ${DOCKER_IMAGE}:${VERSION}-8-jdk-hotspot-bionic --tags "${VERSION}-8-hotspot-bionic ${VERSION}-8-hotspot ${VERSION}-hotspot"'
@@ -45,6 +46,7 @@ jobs:
   - stage: Manifest
     if: branch = master AND type != pull_request
     os: linux
+    arch: s390x
     script:
       - sudo bash ./.ci/enable-experimental.sh
       - sudo bash ./.ci/manifest.sh --image ${DOCKER_IMAGE} --manifest ${VERSION}-8-jdk-openj9-bionic --latest --push
