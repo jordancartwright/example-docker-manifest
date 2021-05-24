@@ -34,7 +34,7 @@ usage() {
   echo "-t, --tags         List of additonal tags for the docker image to have"
   echo ""
   echo "Usage:"
-  echo "${0} --image image:tag --tags \"tag1 tag2 ... tagN\" [--official] [--dry-run]"
+  echo "${0} -i|--image image:tag -t|--tags \"tag1 tag2 ... tagN\" [--official] [--dry-run]"
   echo ""
 }
 
