@@ -37,17 +37,16 @@ usage() {
   echo "-c, --context      Docker image build path to use"
   echo "    --dry-run      Print out what will happen, do not execute"
   echo "-f, --file         Name of the Dockerfile (Default is 'PATH/Dockerfile')"
-  echo "-i, --image        The name of the image"
+  echo "-i, --image        Name of the image and optionally a tag in the 'name:tag' format"
   echo "    --official     Mimic the official docker publish method for images in private registries"
   echo "    --push         Push the image to the specified DOCKER_REGISTRY and DOCKER_NAMESPACE"
-  echo "-t, --tag          The tag name to use for the built image"
   echo ""
   echo "Usage:"
-  echo "${0} [-f|--file path/to/Dockerfile] --image example-docker-manifest --tag 1.0.0-8-jdk-openj9-bionic [-c|--context .] [--build-args \"FOO=bar\"] [--build-opts \"--pull\"] [--push] [--official] [--dry-run]"
+  echo "${0} [-f|--file path/to/Dockerfile] --image example-docker-manifest:1.0.0-8-jdk-openj9-bionic [-c|--context .] [--build-args \"FOO=bar\"] [--build-opts \"--pull\"] [--push] [--official] [--dry-run]"
   echo ""
 }
 
-if [[ "$*" == "" ]] || [[ "$*" != *--image* ]] || [[ "$*" != *--tag* ]]; then
+if [[ "$*" == "" ]] || [[ "$*" != *--image* ]]; then
   usage
   exit 1
 fi
@@ -60,11 +59,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
     -i|--image)
-    DOCKER_IMAGE_NAME=$2
-    shift
-    ;;
-    -t|--tag)
-    DOCKER_BUILD_TAG=$2
+    DOCKER_IMAGE=$2
     shift
     ;;
     --build-args)
@@ -116,6 +111,11 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   if [[ -z ${DOCKER_ARCH} ]]; then
     DOCKER_ARCH=$(docker version -f {{.Server.Arch}})
   fi
+
+  # split the DOCKER_IMAGE into DOCKER_IMAGE_NAME DOCKER_TAG based on the delimiter, ':'
+  IFS=":" read -r -a image_info <<< "$DOCKER_IMAGE"
+  DOCKER_IMAGE_NAME=${image_info[0]}
+  DOCKER_BUILD_TAG=${image_info[1]}
   
   if [[ -z ${DOCKER_BUILD_TAG} ]]; then
     # if the DOCKER_BUILD_TAG is not set, default to latest
