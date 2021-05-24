@@ -28,8 +28,16 @@ IS_DRY_RUN=false        # Prints out what will happen rather than running the co
 
 usage() {
   echo -e "A docker container manifest create script for ci pipelines \n\n"
+  echo "Options:"
+  echo "    --dry-run      Print out what will happen, do not execute"
+  echo "-i, --image        The name of the image"
+  echo "    --latest       Additionally pull and create a maifest for the latest tag"
+  echo "-m, --manifest     The variant tag that will be used for the creation of the manifest"
+  echo "    --official     Mimic the official docker publish method for images in private registries"
+  echo "    --push         Push the manifest to the specified DOCKER_REGISTRY and DOCKER_NAMESPACE"
+  echo ""
   echo "Usage:"
-  echo "${0} --image example-docker-manifest --manifest 1.0.0-8-jdk-openj9-bionic [--latest] [--push] [--official] [--dry-run]"
+  echo "${0} -i|--image example-docker-manifest -m|--manifest 1.0.0-8-jdk-openj9-bionic [--latest] [--push] [--official] [--dry-run]"
   echo ""
 }
 
@@ -45,14 +53,14 @@ while [[ $# -gt 0 ]]; do
         DOCKER_IMAGE=$2
         shift
         ;;
-        --manifest)
+        -m|--manifest)
         IMAGE_MANIFEST=$2
         shift
         ;;
-        -l|--latest)
+        --latest)
         LATEST=true
         ;;
-        -o|--official)
+        --official)
         DOCKER_OFFICIAL=true
         ;;
         --push)

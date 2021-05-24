@@ -27,6 +27,12 @@ IS_DRY_RUN=false        # Prints out what will happen rather than running the co
 
 usage() {
   echo -e "A docker container tagging script for ci pipelines \n\n"
+  echo "Options:"
+  echo "    --dry-run      Print out what will happen, do not execute"
+  echo "-i, --image        The name of the image in the 'name:tag' format"
+  echo "    --official     Mimic the official docker publish method for images in private registries"
+  echo "-t, --tags         List of additonal tags for the docker image to have"
+  echo ""
   echo "Usage:"
   echo "${0} --image image:tag --tags \"tag1 tag2 ... tagN\" [--official] [--dry-run]"
   echo ""
@@ -48,7 +54,7 @@ while [[ $# -gt 0 ]]; do
     TAGS=$2
     shift
     ;;
-    -o|--official)
+    --official)
     DOCKER_OFFICIAL=true
     ;;
     --dry-run)

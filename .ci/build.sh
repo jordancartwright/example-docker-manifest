@@ -31,8 +31,19 @@ IS_DRY_RUN=false        # Prints out what will happen rather than running the co
 
 usage() {
   echo -e "A docker container build script for ci pipelines \n\n"
+  echo "Options:"
+  echo "    --build-args   Set build-time variables in a space separated string (i.e. --build-args \"FOO=bar BAR=foo\")"
+  echo "    --build-opts   Set additonal build options supported by docker (i.e. --build-opts \"--pull --no-cache\")"
+  echo "-c, --context      Docker image build path to use"
+  echo "    --dry-run      Print out what will happen, do not execute"
+  echo "-f, --file         Name of the Dockerfile (Default is 'PATH/Dockerfile')"
+  echo "-i, --image        The name of the image"
+  echo "    --official     Mimic the official docker publish method for images in private registries"
+  echo "    --push         Push the image to the specified DOCKER_REGISTRY and DOCKER_NAMESPACE"
+  echo "-t, --tag          The tag name to use for the built image"
+  echo ""
   echo "Usage:"
-  echo "${0} [-f path/to/Dockerfile] --image example-docker-manifest --tag 1.0.0-8-jdk-openj9-bionic [--context build-context] [--push] [--official] [--dry-run]"
+  echo "${0} [-f|--file path/to/Dockerfile] --image example-docker-manifest --tag 1.0.0-8-jdk-openj9-bionic [-c|--context .] [--build-args \"FOO=bar\"] [--build-opts \"--pull\"] [--push] [--official] [--dry-run]"
   echo ""
 }
 
@@ -56,14 +67,14 @@ while [[ $# -gt 0 ]]; do
     DOCKER_BUILD_TAG=$2
     shift
     ;;
-    -a|--build-args)
+    --build-args)
     DOCKER_BUILD_ARGS=$2
     shift
     ;;
-    -o|--official)
+    --official)
     DOCKER_OFFICIAL=true
     ;;
-    -b|--build-opts)
+    --build-opts)
     DOCKER_BUILD_OPTS=$2
     shift
     ;;
