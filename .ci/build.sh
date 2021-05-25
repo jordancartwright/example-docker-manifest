@@ -14,27 +14,26 @@
 
 # DOCKER_USER - Used for `docker login` to the private registry DOCKER_REGISTRY
 # DOCKER_PASS - Password for the DOCKER_USER
-# DOCKERFILE - The path to the Dockerfile used to build the image, use -f|--file if not specified in env vars
 # DOCKER_REGISTRY - Docker Registry to push the docker image and manifest to (defaults to docker.io)
 # DOCKER_NAMESPACE - Docker namespace to push the docker image to (this is your username for DockerHub)
 # DOCKER_ARCH - The CPU Architecture the docker image is being built on
 
 source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-functions.sh > /dev/null 2>&1
 
-DOCKER_BUILD_TAG=""     # The varient of the docker image to use when tagging the image (i.e. openj9-bionic)
-DOCKER_BUILD_ARGS=""    # List of build-time variables and values separated by spaces (i.e. --build-args "YCSB_VERSION=${VERSION} VAR=value")
-DOCKER_BUILD_OPTS=""    # Options passed to "docker build" command separated by spaces (i.e. --build-opts "--no-cache")
-DOCKER_BUILD_PATH="."   # The docker build context to use when building the image
-DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
-DOCKER_PUSH=false       # flag to push a docker image after being built
-IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
+# Default values
+DOCKER_BUILD_ARGS=""
+DOCKER_BUILD_OPTS=""
+DOCKER_BUILD_PATH="."
+DOCKER_OFFICIAL=false
+DOCKER_PUSH=false
+IS_DRY_RUN=false
 
 usage() {
-  echo -e "A docker container build script for ci pipelines \n\n"
+  echo -e "A build script for docker images to aid the publishing of multi-arch containers \n\n"
   echo "Options:"
   echo "    --build-args   Set build-time variables in a space separated string (i.e. --build-args \"FOO=bar BAR=foo\")"
-  echo "    --build-opts   Set additonal build options supported by docker (i.e. --build-opts \"--pull --no-cache\")"
-  echo "-c, --context      Docker image build path to use"
+  echo "    --build-opts   Set additonal build options supported by docker, separated by spaces (i.e. --build-opts \"--pull --no-cache\")"
+  echo "-c, --context      Docker image build path to use (Default is '.')"
   echo "    --dry-run      Print out what will happen, do not execute"
   echo "-f, --file         Name of the Dockerfile (Default is 'PATH/Dockerfile')"
   echo "-i, --image        Name of the image and optionally a tag in the 'name:tag' format"
@@ -116,7 +115,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   IFS=":" read -r -a image_info <<< "$DOCKER_IMAGE"
   DOCKER_IMAGE_NAME=${image_info[0]}
   DOCKER_BUILD_TAG=${image_info[1]}
-  
+
   if [[ -z ${DOCKER_BUILD_TAG} ]]; then
     # if the DOCKER_BUILD_TAG is not set, default to latest
     DOCKER_BUILD_TAG="latest"
