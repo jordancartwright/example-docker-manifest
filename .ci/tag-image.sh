@@ -20,15 +20,22 @@
 
 source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-functions.sh > /dev/null 2>&1
 
-IMAGE=""                # The docker image (including root tag) to use when making a new tag (image:tag)
-TAGS=""                 # A list of new tags that the image will become i.e. "tag1 tag2 ... tagN"
-DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
-IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
+# Default values
+IMAGE=""
+TAGS=""
+DOCKER_OFFICIAL=false
+IS_DRY_RUN=false
 
 usage() {
-  echo -e "A docker container tagging script for ci pipelines \n\n"
+  echo -e "A docker image tagging script for releasing alternate tag names to an image \n\n"
+  echo "Options:"
+  echo "    --dry-run      Print out what will happen, do not execute"
+  echo "-i, --image        The name of the image in the 'name:tag' format"
+  echo "    --official     Mimic the official docker publish method for images in private registries"
+  echo "-t, --tags         List of additonal tags for the docker image to have"
+  echo ""
   echo "Usage:"
-  echo "${0} --image image:tag --tags \"tag1 tag2 ... tagN\" [--official] [--dry-run]"
+  echo "${0} -i|--image image:tag -t|--tags \"tag1 tag2 ... tagN\" [--official] [--dry-run]"
   echo ""
 }
 
@@ -48,7 +55,7 @@ while [[ $# -gt 0 ]]; do
     TAGS=$2
     shift
     ;;
-    -o|--official)
+    --official)
     DOCKER_OFFICIAL=true
     ;;
     --dry-run)

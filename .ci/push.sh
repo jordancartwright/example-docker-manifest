@@ -20,14 +20,20 @@
 
 source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-functions.sh > /dev/null 2>&1
 
-DOCKER_IMAGE=""         # The name of the image that will be pushed to the DOCKER_REGISTRY
-DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
-IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
+# Default values
+DOCKER_IMAGE=""
+DOCKER_OFFICIAL=false
+IS_DRY_RUN=false
 
 usage() {
-  echo -e "A docker container push script for ci pipelines when tesing an image prior to uploading \n\n"
+  echo -e "A docker push script that can be used when tesing an image prior to uploading \n\n"
+  echo "Options:"
+  echo "    --dry-run      Print out what will happen, do not execute"
+  echo "-i, --image        The name of the image to push in the 'name:tag' format"
+  echo "    --official     Mimic the official docker publish method for images in private registries"
+  echo ""
   echo "Usage:"
-  echo "${0} --image example-docker-manifest:1.0.0-8-jdk-openj9-bionic [--official] [--dry-run]"
+  echo "${0} -i|--image example-docker-manifest:1.0.0-8-jdk-openj9-bionic [--official] [--dry-run]"
   echo ""
 }
 
@@ -43,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     DOCKER_IMAGE=$2
     shift
     ;;
-    -o|--official)
+    --official)
     DOCKER_OFFICIAL=true
     ;;
     --dry-run)

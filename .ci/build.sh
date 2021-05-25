@@ -14,29 +14,38 @@
 
 # DOCKER_USER - Used for `docker login` to the private registry DOCKER_REGISTRY
 # DOCKER_PASS - Password for the DOCKER_USER
-# DOCKERFILE - The path to the Dockerfile used to build the image, use -f|--file if not specified in env vars
 # DOCKER_REGISTRY - Docker Registry to push the docker image and manifest to (defaults to docker.io)
 # DOCKER_NAMESPACE - Docker namespace to push the docker image to (this is your username for DockerHub)
 # DOCKER_ARCH - The CPU Architecture the docker image is being built on
 
 source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-functions.sh > /dev/null 2>&1
 
-DOCKER_BUILD_TAG=""     # The varient of the docker image to use when tagging the image (i.e. openj9-bionic)
-DOCKER_BUILD_ARGS=""    # List of build-time variables and values separated by spaces (i.e. --build-args "YCSB_VERSION=${VERSION} VAR=value")
-DOCKER_BUILD_OPTS=""    # Options passed to "docker build" command separated by spaces (i.e. --build-opts "--no-cache")
-DOCKER_BUILD_PATH="."   # The docker build context to use when building the image
-DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
-DOCKER_PUSH=false       # flag to push a docker image after being built
-IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
+# Default values
+DOCKER_BUILD_ARGS=""
+DOCKER_BUILD_OPTS=""
+DOCKER_BUILD_PATH="."
+DOCKER_OFFICIAL=false
+DOCKER_PUSH=false
+IS_DRY_RUN=false
 
 usage() {
-  echo -e "A docker container build script for ci pipelines \n\n"
+  echo -e "A build script for docker images to aid the publishing of multi-arch containers \n\n"
+  echo "Options:"
+  echo "    --build-args   Set build-time variables in a space separated string (i.e. --build-args \"FOO=bar BAR=foo\")"
+  echo "    --build-opts   Set additonal build options supported by docker, separated by spaces (i.e. --build-opts \"--pull --no-cache\")"
+  echo "-c, --context      Docker image build path to use (Default is '.')"
+  echo "    --dry-run      Print out what will happen, do not execute"
+  echo "-f, --file         Name of the Dockerfile (Default is 'PATH/Dockerfile')"
+  echo "-i, --image        Name of the image and optionally a tag in the 'name:tag' format"
+  echo "    --official     Mimic the official docker publish method for images in private registries"
+  echo "    --push         Push the image to the specified DOCKER_REGISTRY and DOCKER_NAMESPACE"
+  echo ""
   echo "Usage:"
-  echo "${0} [-f path/to/Dockerfile] --image example-docker-manifest --tag 1.0.0-8-jdk-openj9-bionic [--context build-context] [--push] [--official] [--dry-run]"
+  echo "${0} [-f|--file path/to/Dockerfile] --image example-docker-manifest:1.0.0-8-jdk-openj9-bionic [-c|--context .] [--build-args \"FOO=bar\"] [--build-opts \"--pull\"] [--push] [--official] [--dry-run]"
   echo ""
 }
 
-if [[ "$*" == "" ]] || [[ "$*" != *--image* ]] || [[ "$*" != *--tag* ]]; then
+if [[ "$*" == "" ]] || [[ "$*" != *--image* ]]; then
   usage
   exit 1
 fi
@@ -49,21 +58,17 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
     -i|--image)
-    DOCKER_IMAGE_NAME=$2
+    DOCKER_IMAGE=$2
     shift
     ;;
-    -t|--tag)
-    DOCKER_BUILD_TAG=$2
-    shift
-    ;;
-    -a|--build-args)
+    --build-args)
     DOCKER_BUILD_ARGS=$2
     shift
     ;;
-    -o|--official)
+    --official)
     DOCKER_OFFICIAL=true
     ;;
-    -b|--build-opts)
+    --build-opts)
     DOCKER_BUILD_OPTS=$2
     shift
     ;;
@@ -105,7 +110,12 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   if [[ -z ${DOCKER_ARCH} ]]; then
     DOCKER_ARCH=$(docker version -f {{.Server.Arch}})
   fi
-  
+
+  # split the DOCKER_IMAGE into DOCKER_IMAGE_NAME DOCKER_TAG based on the delimiter, ':'
+  IFS=":" read -r -a image_info <<< "$DOCKER_IMAGE"
+  DOCKER_IMAGE_NAME=${image_info[0]}
+  DOCKER_BUILD_TAG=${image_info[1]}
+
   if [[ -z ${DOCKER_BUILD_TAG} ]]; then
     # if the DOCKER_BUILD_TAG is not set, default to latest
     DOCKER_BUILD_TAG="latest"
