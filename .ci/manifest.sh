@@ -20,14 +20,15 @@
 
 source ./.ci/common-functions.sh > /dev/null 2>&1 || source ./ci/common-functions.sh > /dev/null 2>&1
 
-IMAGE_MANIFEST=""        # The variant tag that will be used for the creation of the manifest, mapping all arch images to
-LATEST=false            # Flag set if the docker manifest should include the latest image (usually the most verbose default variant/tag)
-DOCKER_OFFICIAL=false   # mimic the official docker publish method for images in private registries
-DOCKER_PUSH=false       # flag to push a docker manifest to a registry after being created
-IS_DRY_RUN=false        # Prints out what will happen rather than running the commands
+# Default values
+IMAGE_MANIFEST=""
+LATEST=false
+DOCKER_OFFICIAL=false
+DOCKER_PUSH=false
+IS_DRY_RUN=false
 
 usage() {
-  echo -e "A docker container manifest create script for ci pipelines \n\n"
+  echo -e "A script to aid the creation of docker manifests for multi-arch containers \n\n"
   echo "Options:"
   echo "    --dry-run      Print out what will happen, do not execute"
   echo "-i, --image        The name of the image"
