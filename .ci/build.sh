@@ -27,6 +27,7 @@ DOCKER_BUILD_PATH="."
 DOCKER_OFFICIAL=false
 DOCKER_PUSH=false
 IS_DRY_RUN=false
+IS_DEBUG=false
 
 usage() {
   echo -e "A build script for docker images to aid the publishing of multi-arch containers \n\n"
@@ -81,6 +82,9 @@ while [[ $# -gt 0 ]]; do
     ;;
     --dry-run)
     IS_DRY_RUN=true
+    ;;
+    --debug)
+    IS_DEBUG=true
     ;;
     *)
     echo "Unknown option: $key"
