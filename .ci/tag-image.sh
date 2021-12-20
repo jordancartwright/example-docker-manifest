@@ -79,7 +79,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   # ------------------------------
 
   if [[ ${IS_DRY_RUN} = true ]]; then
-    echo "INFO: Dry run executing, nothing will be pushed/run"
+    log_warn "Dry run executing, nothing will be pushed/run"
   fi
 
   # split the IMAGE into DOCKER_IMAGE_NAME DOCKER_TAG based on the delimiter, ':'
@@ -106,7 +106,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
 
     DOCKER_REPO=$(strip-uri ${DOCKER_REPO})
     
-    echo "INFO: Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
+    log_info "Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
     if [[ ! ${IS_DRY_RUN} = true ]]; then
       docker pull ${DOCKER_REPO}:${DOCKER_PULL_TAG}
     fi
@@ -142,7 +142,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
       original_docker_image=$(strip-uri ${original_docker_image})
       tagged_docker_image=$(strip-uri ${tagged_docker_image})
 
-      echo "INFO: Tagging ${original_docker_image} as ${tagged_docker_image}"
+      log_info "Tagging ${original_docker_image} as ${tagged_docker_image}"
       if [[ ! ${IS_DRY_RUN} = true ]]; then
         docker tag ${original_docker_image} ${tagged_docker_image}
         docker push ${tagged_docker_image}

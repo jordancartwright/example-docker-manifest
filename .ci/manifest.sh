@@ -101,7 +101,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
     DOCKER_TAG=$(echo ${DOCKER_TAG} | sed 's/^-*//')  # strip off all leading '-' characters
 
     if [[ ${IS_DRY_RUN} = true ]]; then
-        echo "INFO: Dry run executing, nothing will be pushed/run"
+        log_warn "Dry run executing, nothing will be pushed/run"
     fi
 
     # This uses DOCKER_USER and DOCKER_PASS to login to DOCKER_REGISTRY
@@ -126,14 +126,14 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
 
         DOCKER_REPO=$(strip-uri ${DOCKER_REPO})
 
-        echo "INFO: Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
+        log_info "Pulling ${DOCKER_REPO}:${DOCKER_PULL_TAG}"
         if [[ ! ${IS_DRY_RUN} = true ]]; then
             docker pull ${DOCKER_REPO}:${DOCKER_PULL_TAG}
         fi
         
         if [[ ${LATEST} = true ]]; then
             # the latest flag has been set, pull the latest image
-            echo "INFO: Pulling ${DOCKER_REPO}:${DOCKER_PULL_LATEST}"
+            log_info "Pulling ${DOCKER_REPO}:${DOCKER_PULL_LATEST}"
             if [[ ! ${IS_DRY_RUN} = true ]]; then
                 docker pull ${DOCKER_REPO}:${DOCKER_PULL_LATEST}
             fi
@@ -149,7 +149,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
     # -----------------------------------------------------------------------------------
 
     if [[ ${IS_DRY_RUN} = true ]]; then
-        echo "INFO: Creating Manifests"
+        log_info "Creating Manifests"
     fi
 
     # Create the manifest for our DOCKER_TAG
@@ -180,7 +180,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
     # ---------------------------------------------------------------------------------------------
 
     if [[ ${IS_DRY_RUN} = true ]]; then
-        echo "INFO: Annotating Manifests"
+        log_info "Annotating Manifests"
     fi
 
     # Annotate the manifest for our DOCKER_TAG
@@ -212,7 +212,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
     # Push the manifest for our DOCKER_TAG
     if [[ ${DOCKER_PUSH} = true ]]; then
         if [[ ${IS_DRY_RUN} = true ]]; then
-            echo "INFO: Pushing Manifests"
+            log_info "Pushing Manifests"
         fi
         manifest_push=$(push-manifest-for-tag ${DOCKER_TAG})
         # Run the manifest_push string

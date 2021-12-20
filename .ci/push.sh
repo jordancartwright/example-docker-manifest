@@ -72,6 +72,10 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   # (____/(____) (__) \____/(__)  
   # ------------------------------
 
+  if [[ ${IS_DRY_RUN} = true ]]; then
+    log_warn "Dry run executing, nothing will be pushed/run"
+  fi
+
   # Get the Docker Architecture if not provided
   if [[ -z ${DOCKER_ARCH} ]]; then
     DOCKER_ARCH=$(docker version -f {{.Server.Arch}})
@@ -116,7 +120,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   DOCKER_URI=$(strip-uri ${DOCKER_URI})
 
   # push the built image to the registry
-  echo "INFO: Pushing ${DOCKER_URI}"
+  log_info "Pushing ${DOCKER_URI}"
   if [[ ! ${IS_DRY_RUN} = true ]]; then
     docker push ${DOCKER_URI}
   fi

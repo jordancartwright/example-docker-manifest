@@ -1,5 +1,5 @@
 docker-login() {
-	echo "INFO: Logging in as ${DOCKER_USER}"
+	log_info "Logging in as ${DOCKER_USER}"
 	docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS} || docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 }
 
@@ -67,5 +67,23 @@ strip-uri() {
     uri=$1
     # strip off all leading '/' characters, change `//` to `/`
     uri=$(echo ${uri} | sed 's/^\/*//;s/\/\//\//g')
-    echo  ${uri}
+    echo ${uri}
+}
+
+log_debug() {
+  if [[ ${IS_DEBUG} == true ]]; then
+    echo "DEBU: $*"
+  fi
+}
+
+log_info() {
+  echo "INFO: $*"
+}
+
+log_warn() {
+  echo "WARN: $*"
+}
+
+log_err() {
+  echo "ERRO: $*"
 }
