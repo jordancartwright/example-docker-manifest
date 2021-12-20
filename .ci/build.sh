@@ -35,6 +35,7 @@ usage() {
   echo "    --build-args   Set build-time variables in a space separated string (i.e. --build-args \"FOO=bar BAR=foo\")"
   echo "    --build-opts   Set additonal build options supported by docker, separated by spaces (i.e. --build-opts \"--pull --no-cache\")"
   echo "-c, --context      Docker image build path to use (Default is '.')"
+  echo "    --debug        Print out additional debuging information when running"
   echo "    --dry-run      Print out what will happen, do not execute"
   echo "-f, --file         Name of the Dockerfile (Default is 'PATH/Dockerfile')"
   echo "-i, --image        Name of the image and optionally a tag in the 'name:tag' format"
