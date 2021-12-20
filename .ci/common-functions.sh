@@ -69,3 +69,21 @@ strip-uri() {
     uri=$(echo ${uri} | sed 's/^\/*//;s/\/\//\//g')
     echo  ${uri}
 }
+
+log_debug() {
+  if [[ ${IS_DEBUG} == true ]]; then
+    echo "DEBU: $*"
+  fi
+}
+
+log_info() {
+  echo "INFO: $*"
+}
+
+log_warn() {
+  echo "WARN: $*"
+}
+
+log_err() {
+  echo "ERRO: $*"
+}
