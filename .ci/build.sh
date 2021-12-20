@@ -35,6 +35,7 @@ usage() {
   echo "    --build-args   Set build-time variables in a space separated string (i.e. --build-args \"FOO=bar BAR=foo\")"
   echo "    --build-opts   Set additonal build options supported by docker, separated by spaces (i.e. --build-opts \"--pull --no-cache\")"
   echo "-c, --context      Docker image build path to use (Default is '.')"
+  echo "    --debug        Print out additional debuging information when running"
   echo "    --dry-run      Print out what will happen, do not execute"
   echo "-f, --file         Name of the Dockerfile (Default is 'PATH/Dockerfile')"
   echo "-i, --image        Name of the image and optionally a tag in the 'name:tag' format"
@@ -112,7 +113,12 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
 
   # Get the Docker Architecture if not provided
   if [[ -z ${DOCKER_ARCH} ]]; then
-    DOCKER_ARCH=$(docker version -f {{.Server.Arch}})
+    DOCKER_ARCH=$(get_docker_arch)
+    log_debug "Arch: ${DOCKER_ARCH}"
+    if [[ "${DOCKER_ARCH}" == *"Unsupported architecture"* ]]; then
+      log_err "${DOCKER_ARCH}, exiting"
+      exit 1
+    fi
   fi
 
   # split the DOCKER_IMAGE into DOCKER_IMAGE_NAME DOCKER_TAG based on the delimiter, ':'

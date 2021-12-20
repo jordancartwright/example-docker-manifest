@@ -70,6 +70,29 @@ strip-uri() {
     echo ${uri}
 }
 
+get_docker_arch() {
+    # if docker is running get it from docker
+    if docker ps > /dev/null 2>&1; then
+        arch=$(docker version -f {{.Server.Arch}})
+        # armv7l just returns 'arm'
+        if [[ ${arch} == 'arm' ]]; then
+            arch='armv7l'
+        fi
+    else
+        # otherwise use this matrix to determine architecture
+        arch=""
+        case "$(uname -m)" in
+            amd64|x86_64)    arch='amd64';;
+            aarch64|arm64)   arch='arm64';;
+            armhf|armv7l)    arch='armv7l';;
+            s390x)           arch='s390x';;
+            ppc64el|ppc64le) arch='ppc64le';;
+            *) echo "Unsupported architecture $(uname -m)"; exit 1;;
+        esac
+    fi
+    echo ${arch}
+}
+
 log_debug() {
   if [[ ${IS_DEBUG} == true ]]; then
     echo "DEBU: $*"
