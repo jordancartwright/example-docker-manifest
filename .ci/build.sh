@@ -112,7 +112,12 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
 
   # Get the Docker Architecture if not provided
   if [[ -z ${DOCKER_ARCH} ]]; then
-    DOCKER_ARCH=$(docker version -f {{.Server.Arch}})
+    DOCKER_ARCH=$(get_docker_arch)
+    log_debug "Arch: ${DOCKER_ARCH}"
+    if [[ "${DOCKER_ARCH}" == *"Unsupported architecture"* ]]; then
+      log_err "${DOCKER_ARCH}, exiting"
+      exit 1
+    fi
   fi
 
   # split the DOCKER_IMAGE into DOCKER_IMAGE_NAME DOCKER_TAG based on the delimiter, ':'
