@@ -1,5 +1,5 @@
 docker-login() {
-	echo "INFO: Logging in as ${DOCKER_USER}"
+	log_info "Logging in as ${DOCKER_USER}"
 	docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS} || docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 }
 

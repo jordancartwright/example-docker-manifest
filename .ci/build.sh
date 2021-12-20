@@ -104,7 +104,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
   # ------------------------------
 
   if [[ ${IS_DRY_RUN} = true ]]; then
-    echo "INFO: Dry run executing, nothing will be pushed/run"
+    log_warn "Dry run executing, nothing will be pushed/run"
   fi
 
   # Default the Dockerfile name if not provided
@@ -166,7 +166,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
 
   DOCKER_URI=$(strip-uri ${DOCKER_URI})
 
-  echo "INFO: Building ${DOCKER_URI} using ${DOCKER_BUILD_PATH}/${DOCKERFILE}"
+  log_info "Building ${DOCKER_URI} using ${DOCKER_BUILD_PATH}/${DOCKERFILE}"
   if [[ ! ${IS_DRY_RUN} = true ]]; then
     cd ${DOCKER_BUILD_PATH} && \
     docker build --pull ${DOCKER_BUILD_ARGS} ${DOCKER_BUILD_OPTS} -t ${DOCKER_URI} -f ${DOCKERFILE} .
@@ -174,7 +174,7 @@ if [[ "${FORCE_CI}" == "true" ]] || ([[ "${GIT_BRANCH}" == "${RELEASE_BRANCH:-ma
 
   if [[ ${DOCKER_PUSH} = true ]]; then
     # push the built image to the registry
-    echo "INFO: Pushing ${DOCKER_URI}"
+    log_info "Pushing ${DOCKER_URI}"
     if [[ ! ${IS_DRY_RUN} = true ]]; then
       docker push ${DOCKER_URI}
     fi
